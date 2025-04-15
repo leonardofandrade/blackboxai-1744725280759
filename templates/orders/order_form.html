@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if form.instance.pk %}
+        Editar Ordem de Serviço #{{ form.instance.pk }}
+    {% else %}
+        Nova Ordem de Serviço
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0">
+                    {% if form.instance.pk %}
+                        <i class="fas fa-edit me-2"></i>Editar Ordem de Serviço #{{ form.instance.pk }}
+                    {% else %}
+                        <i class="fas fa-plus me-2"></i>Nova Ordem de Serviço
+                    {% endif %}
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if user.is_staff and form.instance.pk %}
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Você está editando esta ordem como usuário staff. Apenas o status pode ser alterado.
+                    </div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a href="{% url 'orders:order_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Salvar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if form.instance.pk %}
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Informações Adicionais
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Criado por:</strong><br>
+                            {{ form.instance.created_by.username }}</p>
+                            <p><strong>Data de Criação:</strong><br>
+                            {{ form.instance.created_at|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if form.instance.approved_by %}
+                                <p><strong>{{ form.instance.status|title }} por:</strong><br>
+                                {{ form.instance.approved_by.username }}</p>
+                            {% endif %}
+                            <p><strong>Última Atualização:</strong><br>
+                            {{ form.instance.updated_at|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
