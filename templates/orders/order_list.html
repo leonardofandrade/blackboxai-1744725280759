@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Ordens de Serviço{% endblock %}
+
+{% block header %}
+<div class="header-banner">
+    <div class="container">
+        <h1 class="display-4">
+            {% if user.is_staff %}
+                <i class="fas fa-clipboard-list me-2"></i>Todas as Ordens de Serviço
+            {% else %}
+                <i class="fas fa-clipboard-list me-2"></i>Minhas Ordens de Serviço
+            {% endif %}
+        </h1>
+        <p class="lead">Gerencie suas ordens de serviço de forma eficiente</p>
+        <a href="{% url 'orders:order_create' %}" class="btn btn-light btn-lg">
+            <i class="fas fa-plus me-2"></i>Nova Ordem
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        {% if orders %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for order in orders %}
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">#{{ order.id }}</span>
+                                {% if order.status == 'pendente' %}
+                                    <span class="badge bg-warning text-dark">Pendente</span>
+                                {% elif order.status == 'aprovada' %}
+                                    <span class="badge bg-success">Aprovada</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Rejeitada</span>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ order.tipo_servico }}</h5>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="fas fa-user me-1"></i>{{ order.created_by.username }}
+                                    </small>
+                                </p>
+                                <p class="card-text">
+                                    <i class="fas fa-box me-1"></i>Quantidade: {{ order.quantidade_servico }}<br>
+                                    <i class="fas fa-dollar-sign me-1"></i>Preço Unit.: R$ {{ order.preco_unitario }}<br>
+                                    <i class="fas fa-calculator me-1"></i>Total: R$ {{ order.total_price }}
+                                </p>
+                                {% if order.observacoes %}
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            <i class="fas fa-comment me-1"></i>{{ order.observacoes|truncatechars:100 }}
+                                        </small>
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ order.created_at|date:"d/m/Y H:i" }}
+                                    </small>
+                                    <div class="btn-group">
+                                        <a href="{% url 'orders:order_detail' order.pk %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>Ver
+                                        </a>
+                                        {% if user.is_staff or order.status == 'pendente' and order.created_by == user %}
+                                            <a href="{% url 'orders:order_update' order.pk %}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-edit me-1"></i>Editar
+                                            </a>
+                                        {% endif %}
+                                        {% if order.status == 'pendente' and order.created_by == user %}
+                                            <a href="{% url 'orders:order_delete' order.pk %}" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash me-1"></i>Excluir
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {% if is_paginated %}
+                <nav aria-label="Navegação de páginas" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Anterior</span>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">Próxima</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                <h3>Nenhuma ordem de serviço encontrada</h3>
+                <p class="text-muted">Clique no botão "Nova Ordem" para criar uma ordem de serviço.</p>
+                <a href="{% url 'orders:order_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Nova Ordem
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
