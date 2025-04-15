@@ -25,8 +25,10 @@ SECRET_KEY = "django-insecure-q6f6wfcf2p=ovkr(mf3@w4sd3giw04(li=qcf%*y(%=_ky%3lc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['r62836-8000.csb.app', 'localhost', '127.0.0.1']
 
+# CSRF Settings
+CSRF_TRUSTED_ORIGINS = ['https://r62836-8000.csb.app']
 
 # Application definition
 
@@ -129,8 +131,12 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Login/Logout Settings
-LOGIN_REDIRECT_URL = "order_list"
+LOGIN_REDIRECT_URL = "orders:order_list"
 LOGOUT_REDIRECT_URL = "login"
+
+# Session Settings
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_SECURE = False    # Set to True in production with HTTPS
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
