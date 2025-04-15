@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Ordem de Serviço #{{ object.id }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Exclusão
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>Atenção!</strong> Esta ação não pode ser desfeita.
+                </div>
+
+                <p class="mb-4">
+                    Você tem certeza que deseja excluir a ordem de serviço abaixo?
+                </p>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-clipboard-list me-2"></i>Ordem de Serviço #{{ object.id }}
+                        </h5>
+                        <hr>
+                        <p><strong>Tipo de Serviço:</strong> {{ object.tipo_servico }}</p>
+                        <p><strong>Quantidade:</strong> {{ object.quantidade_servico }}</p>
+                        <p><strong>Preço Unitário:</strong> R$ {{ object.preco_unitario }}</p>
+                        <p><strong>Valor Total:</strong> R$ {{ object.total_price }}</p>
+                        <p><strong>Status:</strong> 
+                            {% if object.status == 'pendente' %}
+                                <span class="badge bg-warning text-dark">Pendente</span>
+                            {% elif object.status == 'aprovada' %}
+                                <span class="badge bg-success">Aprovada</span>
+                            {% else %}
+                                <span class="badge bg-danger">Rejeitada</span>
+                            {% endif %}
+                        </p>
+                        {% if object.observacoes %}
+                            <p><strong>Observações:</strong><br>{{ object.observacoes }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'orders:order_detail' object.pk %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Confirmar Exclusão
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
