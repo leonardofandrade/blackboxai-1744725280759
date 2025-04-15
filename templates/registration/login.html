@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login - Sistema de Ordens de Serviço{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="text-center mb-4">
+            <i class="fas fa-clipboard-list fa-3x text-primary mb-3"></i>
+            <h2>Sistema de Ordens de Serviço</h2>
+            <p class="text-muted">Faça login para acessar o sistema</p>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                {% if form.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Usuário ou senha incorretos. Por favor, tente novamente.
+                    </div>
+                {% endif %}
+
+                {% if next %}
+                    {% if user.is_authenticated %}
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Sua conta não tem acesso a esta página. Para prosseguir,
+                            faça login com uma conta que tenha acesso.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Por favor, faça login para acessar esta página.
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">
+                            <i class="fas fa-user me-2"></i>Usuário
+                        </label>
+                        <input type="text" name="username" id="id_username" 
+                               class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                               required autofocus>
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.username.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Senha
+                        </label>
+                        <input type="password" name="password" id="id_password" 
+                               class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                               required>
+                        {% if form.password.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.password.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Entrar
+                        </button>
+                    </div>
+
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <p class="text-muted">
+                <small>
+                    <i class="fas fa-shield-alt me-1"></i>
+                    Sistema protegido. Acesso apenas para usuários autorizados.
+                </small>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .card {
+        border: none;
+        border-radius: 15px;
+    }
+    .btn-primary {
+        border-radius: 8px;
+        padding: 12px;
+    }
+</style>
+{% endblock %}
