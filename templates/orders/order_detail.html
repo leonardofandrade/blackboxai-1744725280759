@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Ordem de Serviço #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-clipboard-list me-2"></i>Ordem de Serviço #{{ order.id }}
+                </h4>
+                {% if order.status == 'pendente' %}
+                    <span class="badge bg-warning text-dark">Pendente</span>
+                {% elif order.status == 'aprovada' %}
+                    <span class="badge bg-success">Aprovada</span>
+                {% else %}
+                    <span class="badge bg-danger">Rejeitada</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="text-muted mb-3">Informações do Serviço</h5>
+                        <p><strong><i class="fas fa-tools me-2"></i>Tipo de Serviço:</strong><br>
+                        {{ order.tipo_servico }}</p>
+                        <p><strong><i class="fas fa-box me-2"></i>Quantidade:</strong><br>
+                        {{ order.quantidade_servico }}</p>
+                        <p><strong><i class="fas fa-dollar-sign me-2"></i>Preço Unitário:</strong><br>
+                        R$ {{ order.preco_unitario }}</p>
+                        <p><strong><i class="fas fa-calculator me-2"></i>Valor Total:</strong><br>
+                        R$ {{ order.total_price }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-muted mb-3">Detalhes da Ordem</h5>
+                        <p><strong><i class="fas fa-user me-2"></i>Criado por:</strong><br>
+                        {{ order.created_by.username }}</p>
+                        <p><strong><i class="fas fa-clock me-2"></i>Data de Criação:</strong><br>
+                        {{ order.created_at|date:"d/m/Y H:i" }}</p>
+                        {% if order.approved_by %}
+                        <p><strong><i class="fas fa-user-check me-2"></i>{{ order.status|title }} por:</strong><br>
+                        {{ order.approved_by.username }}</p>
+                        {% endif %}
+                        <p><strong><i class="fas fa-clock me-2"></i>Última Atualização:</strong><br>
+                        {{ order.updated_at|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+
+                {% if order.observacoes %}
+                <div class="mb-4">
+                    <h5 class="text-muted mb-3">Observações</h5>
+                    <div class="p-3 bg-light rounded">
+                        <i class="fas fa-comment me-2"></i>{{ order.observacoes }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a href="{% url 'orders:order_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Voltar
+                    </a>
+                    <div class="btn-group">
+                        {% if user.is_staff or order.status == 'pendente' and order.created_by == user %}
+                            <a href="{% url 'orders:order_update' order.pk %}" class="btn btn-primary">
+                                <i class="fas fa-edit me-2"></i>Editar
+                            </a>
+                        {% endif %}
+                        {% if order.status == 'pendente' and order.created_by == user %}
+                            <a href="{% url 'orders:order_delete' order.pk %}" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Excluir
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
